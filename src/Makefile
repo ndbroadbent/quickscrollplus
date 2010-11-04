@@ -1,4 +1,4 @@
-iPhonePrivateFrameworksPath=/Users/nathanB/src/iphone-private-frameworks
+iPhonePrivateFrameworksPath=../../iphone-private-frameworks
 networkpxPath=../../networkpx-read-only
 
 iPhoneDevPath=/Developer/Platforms/iPhoneOS.platform/Developer
