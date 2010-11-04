@@ -1,9 +1,12 @@
+iPhonePrivateFrameworksPath=/Users/nathanB/src/iphone-private-frameworks
+networkpxPath=../../networkpx-read-only
+
 iPhoneDevPath=/Developer/Platforms/iPhoneOS.platform/Developer
 iPhoneSDKPath=$(iPhoneDevPath)/SDKs/iPhoneOS3.2.sdk
 iPhoneSimDevPath=/Developer/Platforms/iPhoneSimulator.platform/Developer
 iPhoneSimSDKPath=$(iPhoneSimDevPath)/SDKs/iPhoneSimulator3.2.sdk
 MobileSubstratePath=../deb/Library/MobileSubstrate/DynamicLibraries
-SharedSrcPath=../../src
+SharedSrcPath=$(networkpxPath)/src
 PrefsBundlePath=../deb/System/Library/PreferenceBundles
 
 Compiler=$(iPhoneDevPath)/usr/bin/gcc-4.2
@@ -15,8 +18,8 @@ Options=-arch armv6 \
 	-F$(iPhoneSDKPath)/System/Library/PrivateFrameworks \
 	-I$(iPhoneDevPath)/usr/include/gcc/darwin/default \
 	-I$(iPhoneSDKPath)/usr/lib/gcc/arm-apple-darwin9/4.2.1/include \
-	-I../../include \
-	-I/Users/nathanB/src/iphone-private-frameworks \
+	-I$(networkpxPath)/include \
+	-I$(iPhonePrivateFrameworksPath) \
 	-L/usr/local/lib \
 	-Wall \
 	-L../deb/usr/lib \
@@ -32,7 +35,7 @@ QuickScroll_Sources=QS2.o
 QuickScroll_Target=$(MobileSubstratePath)/QuickScroll.dylib
 QuickScroll_Options=-dynamiclib -framework CoreFoundation -framework Foundation -framework UIKit -framework CoreGraphics
 
-Prefs_Sources=Pref.o ../../hk.kennytm.grip/src/GPGetSmallAppIcon.o
+Prefs_Sources=Pref.o $(networkpxPath)/hk.kennytm.grip/src/GPGetSmallAppIcon.o
 Prefs_Target=$(PrefsBundlePath)/QuickScroll.bundle/QuickScroll
 Prefs_Options=-bundle -framework CoreFoundation -framework Foundation -framework UIKit -framework CoreGraphics -framework SpringBoardServices -framework Preferences
 
