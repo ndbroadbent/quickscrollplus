@@ -1,0 +1,75 @@
+#!/bin/bash
+#
+# dpkg-deb-nodot ... Build DEB packages while ignore all hidden files.
+#
+# Copyright (c) 2009, KennyTM~
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+# 
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+# * Redistributions in binary form must reproduce the above copyright notice, 
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+# * Neither the name of the KennyTM~ nor the names of its contributors may be
+#   used to endorse or promote products derived from this software without
+#   specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+if [[ $# == 0 ]]; then
+	echo "Construct DEB package while ignoring all hidden (e.g. .svn, ._DS_STORE) files.";
+	echo "Usage: dpkg-deb-nodot <directory> [<deb-base-name>]";
+else
+	export COPYFILE_DISABLE=true
+	export COPY_EXTENDED_ATTRIBUTES_DISABLE=true
+
+	SrcDir=$1
+	DebFile=$1
+	DebVersion=0
+	This=$PWD
+	if [[ $# > 1 ]]; then
+		DebFile=$2
+	fi
+
+	TmpDirPrefix=`echo $DebFile | sed 's|/|_|g'`;
+	TmpDir=`mktemp -d /tmp/$TmpDirPrefix.XXXXXX`;
+
+	cd $SrcDir/DEBIAN;
+		FirstLine=`head -1 control`;
+		if expr "$FirstLine" : "[^:]*:.*"; then
+			gnutar --exclude=".*" -czf $TmpDir/control.tar.gz *;
+			# extract version from control.
+			DebVersion=`sed -n -E 's/^Version: *([-.[:alnum:]]+)/\1/p' control`;
+		else
+			# the control file is invalid. just quit.
+			echo "Error: Invalid control file. Quitting.";
+			cd $OLDPWD;
+			rmdir $TmpDir;
+			exit;
+		fi
+	cd $OLDPWD;
+
+	cd $SrcDir;
+		gnutar --exclude=".*" --exclude=DEBIAN -czf $TmpDir/data.tar.gz *;
+	cd $OLDPWD;
+
+	cd $TmpDir;
+		echo "2.0" > debian-binary;
+		ar r $This/$DebFile-$DebVersion.deb debian-binary control.tar.gz data.tar.gz;
+	cd $OLDPWD;
+
+	rm -r $TmpDir;
+fi
