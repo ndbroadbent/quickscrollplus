@@ -1,7 +1,7 @@
-QuickScrollPlus - an extension of QuickScroll2 by KennyTM~, by Nathan Broadbent (www.f-77.com)
-==============================================================================================
+== QuickScrollPlus - an extension of QuickScroll2 by KennyTM~, by Nathan Broadbent (www.f-77.com)
 
-= NOTE: This is under development, but has not been started yet. I just decided to write the README first :)
+NOTE: This is under development, but has not been started yet. I just decided to write the README first :)
+----------------------------------------------------------------------------------------------------------
 
 This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling. Will be tested and working iOS 4.1, lower versions are unsupported until they can be tested by someone else.
 See here for the original project wiki: http://code.google.com/p/networkpx/wiki/Using_QuickScroll
@@ -9,7 +9,7 @@ See here for the original project wiki: http://code.google.com/p/networkpx/wiki/
 Please note: This application will only work on a jailbroken iPhone.
 
 
-= Application Usage
+== Application Usage
 
 To use the tilt scrolling feature: 
 
@@ -20,9 +20,9 @@ To use the tilt scrolling feature:
 5) To turn off the tilt scroll feature, double tap the scroll bars again.
 
 
-= Compiling and installing from source
+== Compiling and installing from source
 
-=== In order to compile and install this application, you must have the following files on your Mac:
+- In order to compile and install this application, you must have the following files on your Mac:
 
 * iOS 4.1 SDK or higher (including iPhone 3.2 SDK)
 ** Sign up for a free apple developer account to download.
