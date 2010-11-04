@@ -1,14 +1,14 @@
-Package: hk.kennytm.quickscroll
-Name: QuickScroll 2
-Version: 0.2-2a
+Package: hk.ndb.quickscrollplus
+Name: QuickScrollPlus
+Version: 0.3-1a
 Architecture: iphoneos-arm
-Description: Quickly scroll through anything. PDF paging. Initiate with two-finger or triple tap.
-Homepage: http://code.google.com/p/networkpx/
-Maintainer: KennyTM~ <kennytm+QuickScroll@gmail.com>
+Description: Quickly scroll through anything. PDF paging. Initiate with two-finger or triple tap. Now extended with 'tilt' scrolling for everything on your iPhone.
+Homepage: http://github.com/ndbroadbent/quickscrollplus
+Maintainer: NathanB <www.f-77.com>
 Author: KennyTM~ <kennytm+QuickScroll@gmail.com>
 Section: System
 Depends: mobilesubstrate (>=0.9-0), preferenceloader (>=1.1)
 Pre-Depends: firmware (>=3.0)
 Installed-Size: 160
-Support: http://code.google.com/p/networkpx/wiki/FAQ
-dev: kennytm
+Support: http://github.com/ndbroadbent/quickscrollplus
+dev: ndbroadbent
