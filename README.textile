@@ -53,6 +53,6 @@ $ scp hk.ndb.quickscrollplus-0.3-1a.deb root@{{iPhone IP}}:/tmp
 $ ssh root@{{iPhone IP}}
 $ cd /tmp && dpkg -i hk.ndb.quickscrollplus-0.3-1a.deb
 
-Reboot your iPhone, and your done!
+Reboot your iPhone, and you're done!
 
-If you experience crashing or bugs, please install Crash Reporter on your iphone and send me the syslog output.
+If you are experience crashing or bugs, please install Crash Reporter on your iphone and post the syslog output as an issue.
