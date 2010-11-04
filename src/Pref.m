@@ -25,7 +25,7 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 @implementation QuickScrollDisabledAppsController
 -(id)initForContentSize:(CGSize)size {
 	if ((self = [super initForContentSize:size])) {
-		CFArrayRef gameModeAppsArray = CFPreferencesCopyAppValue(CFSTR("disabled_apps"), CFSTR("hk.kennytm.quickscroll2"));
+		CFArrayRef gameModeAppsArray = CFPreferencesCopyAppValue(CFSTR("disabled_apps"), CFSTR("hk.ndb.quickscrollplus"));
 		gameModeApps = [NSMutableSet alloc];
 		gameModeApps = gameModeAppsArray ? [gameModeApps initWithArray:(NSArray*)gameModeAppsArray] : [gameModeApps init];
 		if (gameModeAppsArray != nil)
@@ -41,9 +41,9 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 	[super dealloc];
 }
 -(void)suspend {
-	CFPreferencesSetAppValue(CFSTR("disabled_apps"), [gameModeApps allObjects], CFSTR("hk.kennytm.quickscroll2"));
-	CFPreferencesAppSynchronize(CFSTR("hk.kennytm.quickscroll2"));
-	notify_post("hk.kennytm.quickscroll2.reload");
+	CFPreferencesSetAppValue(CFSTR("disabled_apps"), [gameModeApps allObjects], CFSTR("hk.ndb.quickscrollplus"));
+	CFPreferencesAppSynchronize(CFSTR("hk.ndb.quickscrollplus"));
+	notify_post("hk.ndb.quickscrollplus.reload");
 	[super suspend];
 }
 -(void)appendAppWithPath:(NSString*)path identifier:(NSString*)identifier toArray:(NSMutableArray*)arr {
@@ -105,7 +105,6 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 	NSMutableArray* springBoardApp = [[NSMutableArray alloc] init];
 	
 	[self appendAppWithPath:@"/System/Library/CoreServices/SpringBoard.app" identifier:@"com.apple.springboard" toArray:springBoardApp];
-	/*
 	// 1. Enumerate apps in ~/Applications
 	for (NSString* subpath in [fman contentsOfDirectoryAtPath:@"/var/mobile/Applications" error:NULL]) {
 		NSString* fullSubpath = [@"/var/mobile/Applications" stringByAppendingPathComponent:subpath];
@@ -124,13 +123,10 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 	[userApps sortUsingFunction:&comparePSSpecs context:NULL];
 	[systemApps sortUsingFunction:&comparePSSpecs context:NULL];
 	
-	 
-	*/
-	
-	[springBoardApp addObject:[PSSpecifier emptyGroupSpecifier]];
+	//[springBoardApp addObject:[PSSpecifier emptyGroupSpecifier]];
 	[springBoardApp addObjectsFromArray:userApps];
 	[userApps release];
-	[springBoardApp addObject:[PSSpecifier emptyGroupSpecifier]];
+	//[springBoardApp addObject:[PSSpecifier emptyGroupSpecifier]];
 	[springBoardApp addObjectsFromArray:systemApps];
 	[systemApps release];
 	
