@@ -1,5 +1,8 @@
 /*
+ QuickScrollPlus - A fork of QuickScroll2, by Nathan B (www.f-77.com)
+ - Extended with 'tilt' scrolling. Double tap the scroll bar to calibrate and enable.
 
+ 
  QS2.m - Quickly scroll through everything.
  Copyright (C) 2009  KennyTM~
  
