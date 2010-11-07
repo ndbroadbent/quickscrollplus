@@ -2,9 +2,8 @@
  QuickScrollPlus - A fork of QuickScroll2, by Nathan B (www.f-77.com)
  - Extended with 'tilt' scrolling. Double tap the scroll bar to calibrate and enable.
 
- 
- QS2.m - Quickly scroll through everything.
- Copyright (C) 2009  KennyTM~
+ - Built on QS2.m,
+   Copyright (C) 2009  KennyTM~
  
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -38,11 +37,11 @@ static CGSize handleSize, emptySize;
 static CGFloat _close_height, _key_height;
 
 #if TARGET_IPHONE_SIMULATOR
-#define RSRC @"/Users/kennytm/XCodeProjects/iKeyEx/svn/trunk/hk.kennytm.quickscroll2/deb/System/Library/PreferenceBundles/QuickScroll.bundle"
-#define PREFPATH @"/Users/kennytm/Library/Application Support/iPhone Simulator/User/Library/Preferences/hk.kennytm.quickscroll2.plist"
+#define RSRC @"/Users/kennytm/XCodeProjects/iKeyEx/svn/trunk/hk.kennytm.quickscroll2/deb/System/Library/PreferenceBundles/QuickScrollPlus.bundle"
+#define PREFPATH @"/Users/kennytm/Library/Application Support/iPhone Simulator/User/Library/Preferences/hk.ndb.quickscrollplus.plist"
 #else
-#define RSRC @"/System/Library/PreferenceBundles/QuickScroll.bundle"
-#define PREFPATH @"/var/mobile/Library/Preferences/hk.kennytm.quickscroll2.plist"
+#define RSRC @"/System/Library/PreferenceBundles/QuickScrollPlus.bundle"
+#define PREFPATH @"/var/mobile/Library/Preferences/hk.ndb.quickscrollplus.plist"
 #endif
 
 // From AppSupport.framework.
@@ -1201,7 +1200,7 @@ static UIImage* QSCreateStretchableImage(UIImage* img, int stfl) {
 __attribute__((destructor)) void QS2_finish() {
 	for (int i = 0; i < sizeof(imagesObj)/sizeof(imagesObj[0]); ++ i)
 		[imagesObj[i] release];
-	CFNotificationCenterRemoveObserver(CFNotificationCenterGetDarwinNotifyCenter(), &dummy, CFSTR("hk.kennytm.quickscroll2.reload"), NULL);
+	CFNotificationCenterRemoveObserver(CFNotificationCenterGetDarwinNotifyCenter(), &dummy, CFSTR("hk.ndb.quickscrollplus.reload"), NULL);
 }
 
 __attribute__((constructor)) void QS2_initialize() {
@@ -1218,7 +1217,7 @@ __attribute__((constructor)) void QS2_initialize() {
 	
 	reload_prefs();
 	
-	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), &dummy, (CFNotificationCallback)reload_prefs, CFSTR("hk.kennytm.quickscroll2.reload"), NULL, 0);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), &dummy, (CFNotificationCallback)reload_prefs, CFSTR("hk.ndb.quickscrollplus.reload"), NULL, 0);
 	
 	InstallObjCInstanceHook([UIWindow class], @selector(_sendTouchesForEvent:), UIWindow__sendTouchesForEvent_);
 	InstallObjCInstanceHook([UIScrollView class], @selector(_notifyDidScroll), UIScrollView__notifyDidScroll);

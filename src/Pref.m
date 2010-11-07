@@ -153,7 +153,7 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 		_specifiers = [[NSArray alloc] initWithObjects:
 					   [PSSpecifier emptyGroupSpecifier],
 					   [PSSpecifier groupSpecifierWithName:[[NSBundle bundleForClass:[self class]]
-															localizedStringForKey:@"Switch off to disable." value:nil table:@"QuickScroll"]],
+															localizedStringForKey:@"Switch off to disable." value:nil table:@"QuickScrollPlus"]],
 					   nil];
 		[self showHUD];
 		[self performSelectorInBackground:@selector(populateSystemApps) withObject:nil];
@@ -185,7 +185,7 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 @implementation QuickScrollController
 -(NSArray*)specifiers {
 	if (_specifiers == nil)
-		_specifiers = [[self loadSpecifiersFromPlistName:@"QuickScroll" target:self] retain];
+		_specifiers = [[self loadSpecifiersFromPlistName:@"QuickScrollPlus" target:self] retain];
 	return _specifiers;
 }
 @end

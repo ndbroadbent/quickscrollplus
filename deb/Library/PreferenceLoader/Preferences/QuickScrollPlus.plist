@@ -1,0 +1,9 @@
+{
+	entry = {
+		cell = PSLinkCell;
+		hasIcon = 1;
+		label = QuickScrollPlus;
+		bundle = QuickScrollPlus;
+		isController = 1;
+	};
+}

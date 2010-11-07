@@ -22,21 +22,20 @@ Options=-arch armv6 \
 	-I$(iPhonePrivateFrameworksPath) \
 	-L/usr/local/lib \
 	-Wall \
-	-L../deb/usr/lib \
 	-L/usr/lib/ \
 	-mcpu=arm1176jzf-s \
 	-O2
 
-DontThumbSources=QS2.o
+DontThumbSources=QSP.o
 
-AllTargets=QuickScroll Prefs
+AllTargets=QuickScrollPlus Prefs
 
-QuickScroll_Sources=QS2.o
-QuickScroll_Target=$(MobileSubstratePath)/QuickScroll.dylib
-QuickScroll_Options=-dynamiclib -framework CoreFoundation -framework Foundation -framework UIKit -framework CoreGraphics
+QuickScrollPlus_Sources=QSP.o
+QuickScrollPlus_Target=$(MobileSubstratePath)/QuickScrollPlus.dylib
+QuickScrollPlus_Options=-dynamiclib -framework CoreFoundation -framework Foundation -framework UIKit -framework CoreGraphics
 
 Prefs_Sources=Pref.o $(networkpxPath)/hk.kennytm.grip/src/GPGetSmallAppIcon.o
-Prefs_Target=$(PrefsBundlePath)/QuickScroll.bundle/QuickScroll
+Prefs_Target=$(PrefsBundlePath)/QuickScrollPlus.bundle/QuickScrollPlus
 Prefs_Options=-bundle -framework CoreFoundation -framework Foundation -framework UIKit -framework CoreGraphics -framework SpringBoardServices -framework Preferences
 
 #-----------------------------------------------------------------------------------------------------------------
