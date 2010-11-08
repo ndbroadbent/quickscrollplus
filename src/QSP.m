@@ -24,7 +24,7 @@
 #include <substrate2.h>
 #import <UIKit/UIKit2.h>
 
-static BOOL activate_by_single_tap, activate_by_triple_tap, activate_by_two_finger_tap, use_scrollbar, scrollbar_jump_by_pages_not, activate_by_scrolling;
+static BOOL activate_by_single_tap, activate_by_triple_tap, activate_by_two_finger_tap, use_scrollbar, scrollbar_jump_by_pages_not, activate_by_scrolling, activate_tilt_scrolling_by_scrollbar_double_tap;
 static pthread_mutex_t prefs_lock = PTHREAD_MUTEX_INITIALIZER;
 static NSTimeInterval autodismiss_timer;
 static int dummy;
@@ -59,6 +59,7 @@ void reload_prefs() {
 		autodismiss_timer = 2;
 		scrollbar_jump_by_pages_not = NO;
 		activate_by_scrolling = NO;
+		activate_tilt_scrolling_by_scrollbar_double_tap = YES;
 		
 		static NSString* const prefs_keys[] = {
 			@"activate_by_single_tap", 
@@ -68,8 +69,9 @@ void reload_prefs() {
 			@"autodismiss_timer",
 			@"scrollbar_jump_by_pages_not",
 			@"activate_by_scrolling",
+			@"activate_tilt_scrolling_by_scrollbar_double_tap"
 		};		
-		CFTypeRef default_values[] = {kCFBooleanTrue, kCFBooleanFalse, kCFBooleanFalse, kCFBooleanTrue, [NSNumber numberWithDouble:2], kCFBooleanFalse, kCFBooleanFalse};
+		CFTypeRef default_values[] = {kCFBooleanTrue, kCFBooleanFalse, kCFBooleanFalse, kCFBooleanTrue, [NSNumber numberWithDouble:2], kCFBooleanFalse, kCFBooleanFalse, kCFBooleanTrue};
 		
 		dict2 = [NSDictionary dictionaryWithObjects:(id*)default_values forKeys:prefs_keys count:sizeof(prefs_keys)/sizeof(prefs_keys[0])];
 		[dict2 writeToFile:PREFPATH atomically:YES];
@@ -85,6 +87,7 @@ void reload_prefs() {
 			autodismiss_timer = [[dict2 objectForKey:@"autodismiss_timer"] doubleValue] ?: 2;
 			scrollbar_jump_by_pages_not = [[dict2 objectForKey:@"scrollbar_jump_by_pages_not"] boolValue];
 			activate_by_scrolling = [[dict2 objectForKey:@"activate_by_scrolling"] boolValue];
+			activate_tilt_scrolling_by_scrollbar_double_tap = [[dict2 objectForKey:@"activate_tilt_scrolling_by_scrollbar_double_tap"] boolValue];
 		}
 	}
 	
@@ -811,11 +814,14 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	CGRect relativeFrame, visualRelFrame, savedVisualRelFrame;
 	CGPoint initTouch;
 	NSTimer* autoShiftTimer;
-	UIImage* button, *button_down;
+	UIImage* button, *button_down, *tilt_button, *tilt_button_down;
 	int location;	// -2 = left, -1 = above, 0 = on scrollbar, 1 = below, 2 = right
 	BOOL isVertical;
 	BOOL isTouchDown;
 	BOOL firedOnce;
+	NSTimer* tapTimer;
+	int tapCount;
+	BOOL isTiltActivated;
 }
 @property(assign,nonatomic) CGSize scale;
 @end
@@ -849,12 +855,16 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 }
 
 -(id)initWithFrame:(CGRect)frame abstractScroller:(QSAbstractScroller*)absScr vertical:(BOOL)vert
-			button:(UIImage*)btn buttonDown:(UIImage*)btnDown {
+			button:(UIImage*)btn buttonDown:(UIImage*)btnDown tiltButton:(UIImage*)tltBtn tiltButtonDown:(UIImage*)tltBtnDown {
 	if ((self = [super initWithFrame:frame])) {
 		isVertical = vert;
 		abstractScroller = absScr;
 		button = btn;
 		button_down = btnDown;
+		tilt_button = tltBtn;
+		tilt_button_down = tltBtnDown;
+		tapCount = 0;
+		isTiltActivated = NO;
 		self.autoresizingMask = vert ? (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleHeight) : (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
 		self.contentMode = UIViewContentModeRedraw;
 		self.backgroundColor = [UIColor clearColor];
@@ -862,7 +872,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	return self;
 }
 -(void)drawRect:(CGRect)rect {
-	[isTouchDown?button_down:button drawInRect:CGRectRound(visualRelFrame)];
+	[isTouchDown?(isTiltActivated?tilt_button_down:button_down):(isTiltActivated?tilt_button:button) drawInRect:CGRectRound(visualRelFrame)];
 }
 
 -(void)getLocation:(UITouch*)touch {
@@ -933,6 +943,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 //			initTouch = visualRelFrame.origin;
 		}
 	}
+	
 	[self setNeedsDisplay];
 }
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -944,6 +955,15 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 		else
 			delta.width = newTouch.x - initTouch.x;
 		[self shiftRelativeFrameVisuallyBy:delta];
+	}
+	
+	if (activate_tilt_scrolling_by_scrollbar_double_tap) {
+		// If the scrollbar moves at all, invalidate the tapCount. Double tap must be done on a static scroll bar.
+		tapCount = 0;
+		if (tapTimer) {
+			[tapTimer invalidate];
+			[tapTimer release];
+		}
 	}
 }
 -(void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
@@ -960,7 +980,40 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	[abstractScroller _didScroll];
 	abstractScroller.gestureEnabled = YES;
 	//self.exclusiveTouch = NO;
+	
+	// When a touch ends, increment the tapCount and start the tapTimer. If the timer fires after a delay, reset the tap count.
+	// Double tap required to activate. Single tap to deactivate.
+	if (activate_tilt_scrolling_by_scrollbar_double_tap) {
+		if (tapTimer) {
+			[tapTimer invalidate];
+			[tapTimer release];
+		}
+		
+		if (isTiltActivated) {
+			isTiltActivated = NO;
+			
+			// ------- Turn off tilt scrolling here -------
+			
+		} else {
+			tapCount += 1;
+			if (tapCount == 2) {
+				// Scrollbar was double-tapped.
+				isTiltActivated = YES;
+				
+				// ------- Turn on tilt scrolling here -------
+				
+			} else {
+				tapTimer = [[NSTimer scheduledTimerWithTimeInterval:800 target:self selector:@selector(fireTapReset) userInfo:nil repeats:YES] retain];
+			}
+		}
+	}
+	
 	[self setNeedsDisplay];
+}
+
+
+-(void)fireTapReset {
+	tapCount = 0;
 }
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -969,6 +1022,8 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 -(void)dealloc {
 	[autoShiftTimer invalidate];
 	[autoShiftTimer release];
+	[tapTimer invalidate];
+	[tapTimer release];
 	[super dealloc];
 }
 @end
@@ -1009,12 +1064,12 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 		[self removeScrollIndicators];
 		
 		vertBar = [[QSScrollbar alloc] initWithFrame:CGRectMake(myFr.size.width-handleSize.width, 0, handleSize.width, myFr.size.height-handleSize.height)
-									abstractScroller:self vertical:YES button:imagesObj[QSI_2] buttonDown:imagesObj[QSI_3]];
+									abstractScroller:self vertical:YES button:imagesObj[QSI_2] buttonDown:imagesObj[QSI_3] tiltButton:imagesObj[QSI_T_2] tiltButtonDown:imagesObj[QSI_T_3]];
 		[self addSubview:vertBar];
 		[vertBar release];
 		
 		horBar = [[QSScrollbar alloc] initWithFrame:CGRectMake(0, myFr.size.height-handleSize.height, myFr.size.width-handleSize.width, handleSize.height)
-								   abstractScroller:self vertical:NO button:imagesObj[QSI_0] buttonDown:imagesObj[QSI_1]];
+									abstractScroller:self vertical:NO button:imagesObj[QSI_0] buttonDown:imagesObj[QSI_1] tiltButton:imagesObj[QSI_T_0] tiltButtonDown:imagesObj[QSI_T_1]];
 		[self addSubview:horBar];
 		[horBar release];
 		
