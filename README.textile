@@ -1,11 +1,14 @@
-h1. QuickScrollPlus - an extension of QuickScroll2 by KennyTM~, by Nathan Broadbent (www.f-77.com)
+h1. QuickScrollPlus
+
+h2. an extension of QuickScroll2 by KennyTM~, developed by Nathan Broadbent (www.f-77.com)
 
 h3. NOTE: This is under active development, but the tilt feature is yet to be implemented. See the change log in this README for details of what has been done so far.
 
-This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling. Will be tested and working iOS 4.1, lower versions are unsupported until they can be tested by someone else.
-See here for the original project wiki: http://code.google.com/p/networkpx/wiki/Using_QuickScroll
+This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling. Is tested and working iOS 4.1. However, it is compiled with the 3.2 SDK, so it should work on most devices. If someone is able to confirm this, please let me know by raising an issue on the github page.
 
-Please note: This application will only work on a jailbroken iPhone.
+See here for the original QuickScroll2 project wiki: http://code.google.com/p/networkpx/wiki/Using_QuickScroll
+
+Please be aware: This application will only ever work on a jailbroken iPhone.
 
 h2. Changes / Bug fixes
 
