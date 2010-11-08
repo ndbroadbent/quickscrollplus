@@ -1,12 +1,22 @@
 h1. QuickScrollPlus - an extension of QuickScroll2 by KennyTM~, by Nathan Broadbent (www.f-77.com)
 
-h3. NOTE: This is under development, but has not been started yet. I just decided to write the README first :)
+h3. NOTE: This is under active development, but the tilt feature is yet to be implemented. See the change log in this README for details of what has been done so far.
 
 This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling. Will be tested and working iOS 4.1, lower versions are unsupported until they can be tested by someone else.
 See here for the original project wiki: http://code.google.com/p/networkpx/wiki/Using_QuickScroll
 
 Please note: This application will only work on a jailbroken iPhone.
 
+h2. Changes / Bug fixes
+
+* Fixed preferences bug where the 'disabled apps' page just crashed.
+* Fixed 'disabled apps' controller bug, where the state of the toggles was only saved on suspension, not deallocation.
+* Increased minimum size of scrollbar buttons (double the height / width of the circle.)
+
+h2. TODO
+
+* Add disable support for Springboard.
+* Add 'tilt' scrolling support. (double tap the scrollbar to activate.)
 
 h2. Application Usage
 
