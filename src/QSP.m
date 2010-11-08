@@ -37,7 +37,7 @@ static CGSize handleSize, emptySize;
 static CGFloat _close_height, _key_height;
 
 #if TARGET_IPHONE_SIMULATOR
-#define RSRC @"/Users/kennytm/XCodeProjects/iKeyEx/svn/trunk/hk.kennytm.quickscroll2/deb/System/Library/PreferenceBundles/QuickScrollPlus.bundle"
+#define RSRC @"/Users/kennytm/XCodeProjects/iKeyEx/svn/trunk/hk.ndb.quickscrollplus/deb/System/Library/PreferenceBundles/QuickScrollPlus.bundle"
 #define PREFPATH @"/Users/kennytm/Library/Application Support/iPhone Simulator/User/Library/Preferences/hk.ndb.quickscrollplus.plist"
 #else
 #define RSRC @"/System/Library/PreferenceBundles/QuickScrollPlus.bundle"

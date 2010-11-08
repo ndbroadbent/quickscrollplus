@@ -179,10 +179,10 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 @end
 
 
-@interface QuickScrollController : PSListController
+@interface QuickScrollPlusController : PSListController
 @end
 
-@implementation QuickScrollController
+@implementation QuickScrollPlusController
 -(NSArray*)specifiers {
 	if (_specifiers == nil)
 		_specifiers = [[self loadSpecifiersFromPlistName:@"QuickScrollPlus" target:self] retain];
