@@ -61,6 +61,9 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 	
 	NSString* localizedName = SBSCopyLocalizedApplicationNameForDisplayIdentifier(identifier);
 	
+	if (identifier == @"com.apple.springboard")
+		localizedName = @"SpringBoard";
+	
 	if (localizedName == nil && image == nil)
 		return;
 	
@@ -109,7 +112,6 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 	NSMutableArray* systemApps = [[NSMutableArray alloc] init];
 	NSMutableArray* springBoardApp = [[NSMutableArray alloc] init];
 	
-	[self appendAppWithPath:@"/System/Library/CoreServices/SpringBoard.app" identifier:@"com.apple.springboard" toArray:springBoardApp];
 	// 1. Enumerate apps in ~/Applications
 	for (NSString* subpath in [fman contentsOfDirectoryAtPath:@"/var/mobile/Applications" error:NULL]) {
 		NSString* fullSubpath = [@"/var/mobile/Applications" stringByAppendingPathComponent:subpath];
@@ -130,10 +132,14 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 	
 	[springBoardApp addObject:[PSSpecifier emptyGroupSpecifier]];
 	
+	[self appendAppWithPath:@"/System/Library/CoreServices/SpringBoard.app" identifier:@"com.apple.springboard" toArray:springBoardApp];
+	
 	[springBoardApp addObjectsFromArray:userApps];
 	[userApps release];
-		// Commenting out the following line seemed to fix a bug; stops the 'disabled apps' controller from crashing.
+	
+	// Commenting out the following line stops the 'disabled apps' controller from crashing.
 	//[springBoardApp addObject:[PSSpecifier emptyGroupSpecifier]];
+	
 	[springBoardApp addObjectsFromArray:systemApps];
 	[systemApps release];
 	
