@@ -14,12 +14,15 @@ h2. Changes / Bug fixes
 
 * Fixed preferences bug where the 'disabled apps' page just crashed.
 * Fixed 'disabled apps' controller bug, where the state of the toggles was only saved on suspension, not deallocation.
+* Springboard app can now be disabled (was previously not showing because it had no icon and no localized title could be found).
 * Increased minimum size of scrollbar buttons (double the height / width of the circle.)
 
 h2. TODO
 
-* Add disable support for Springboard.
 * Add 'tilt' scrolling support. (double tap the scrollbar to activate.)
+* Fix up 'disabled apps' page:
+** Work out how to get icons showing for some cases
+** Work out how to use the PS groups without crashing the controller.
 
 h2. Application Usage
 
