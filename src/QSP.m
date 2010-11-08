@@ -29,11 +29,11 @@ static pthread_mutex_t prefs_lock = PTHREAD_MUTEX_INITIALIZER;
 static NSTimeInterval autodismiss_timer;
 static int dummy;
 
-enum { QSI_0, QSI_1, QSI_2, QSI_3, QSI_empty, QSI_K1, QSI_K2, QSI_K5, QSI_K6, QSI_sel, QSI_UIPasscodeFieldButton };
-static NSString* const imagesFn[] = {@"0", @"1", @"2", @"3", @"empty", @"K1", @"K2", @"K5", @"K6", @"sel", @"UIPasscodeFieldButton"};
-static int const imagesStfl[] = {1, 1, 2, 2, 0, 1, 1, 0, 0, 3, 3};
-static UIImage* imagesObj[11];
-static CGSize handleSize, emptySize;
+enum { QSI_0, QSI_1, QSI_2, QSI_3, QSI_T_0, QSI_T_1, QSI_T_2, QSI_T_3, QSI_empty, QSI_K1, QSI_K2, QSI_K5, QSI_K6, QSI_sel, QSI_UIPasscodeFieldButton };
+static NSString* const imagesFn[] = {@"0", @"1", @"2", @"3", @"0t", @"1t", @"2t", @"3t", @"empty", @"K1", @"K2", @"K5", @"K6", @"sel", @"UIPasscodeFieldButton"};
+static int const imagesStfl[] = {1, 1, 2, 2, 1, 1, 2, 2, 0, 1, 1, 0, 0, 3, 3};
+static UIImage* imagesObj[15];
+static CGSize handleSize, minHandleDisplaySize, emptySize;
 static CGFloat _close_height, _key_height;
 
 #if TARGET_IPHONE_SIMULATOR
@@ -823,7 +823,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 @synthesize scale;
 -(void)setRelativeFrame:(CGRect)rf {
 	relativeFrame = rf;
-	visualRelFrame = actualToVisual(rf, self.bounds.size, handleSize);
+	visualRelFrame = actualToVisual(rf, self.bounds.size, minHandleDisplaySize);
 	
 	if (isVertical) {
 		visualRelFrame.origin.x = 0;
@@ -1211,6 +1211,12 @@ __attribute__((constructor)) void QS2_initialize() {
 		imagesObj[i] = QSCreateStretchableImage(img, imagesStfl[i]);
 	}
 	handleSize = imagesObj[QSI_0].size;
+	
+	// Sets a minimum handle display size (Because the little circle isn't quite big enough.)
+	minHandleDisplaySize = handleSize;
+	minHandleDisplaySize.width  *= 2;
+	minHandleDisplaySize.height *= 2;
+	
 	emptySize = imagesObj[QSI_empty].size;
 	_close_height = imagesObj[QSI_K5].size.height;
 	_key_height = imagesObj[QSI_K1].size.height;
