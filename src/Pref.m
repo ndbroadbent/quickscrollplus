@@ -13,6 +13,7 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 -(id)initForContentSize:(CGSize)size;
 -(void)dealloc;
 -(void)suspend;
+-(void)saveState;
 -(NSArray*)specifiers;
 -(void)populateSystemApps;
 -(CFBooleanRef)getApp:(PSSpecifier*)spec;
@@ -36,16 +37,20 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 	return self;
 }
 -(void)dealloc {
+	[self saveState];
 	[gameModeApps release];
 	[enumeratingHUD release];
 	[super dealloc];
 }
 -(void)suspend {
+	[self saveState];
+	[super suspend];
+}
+-(void)saveState {
 	CFPreferencesSetAppValue(CFSTR("disabled_apps"), [gameModeApps allObjects], CFSTR("hk.ndb.quickscrollplus"));
 	CFPreferencesAppSynchronize(CFSTR("hk.ndb.quickscrollplus"));
 	notify_post("hk.ndb.quickscrollplus.reload");
-	[super suspend];
-}
+}	
 -(void)appendAppWithPath:(NSString*)path identifier:(NSString*)identifier toArray:(NSMutableArray*)arr {
 	UIImage* image = GPGetSmallAppIcon(identifier);
 	if (image == nil) {
@@ -123,9 +128,11 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 	[userApps sortUsingFunction:&comparePSSpecs context:NULL];
 	[systemApps sortUsingFunction:&comparePSSpecs context:NULL];
 	
-	//[springBoardApp addObject:[PSSpecifier emptyGroupSpecifier]];
+	[springBoardApp addObject:[PSSpecifier emptyGroupSpecifier]];
+	
 	[springBoardApp addObjectsFromArray:userApps];
 	[userApps release];
+		// Commenting out the following line seemed to fix a bug; stops the 'disabled apps' controller from crashing.
 	//[springBoardApp addObject:[PSSpecifier emptyGroupSpecifier]];
 	[springBoardApp addObjectsFromArray:systemApps];
 	[systemApps release];
