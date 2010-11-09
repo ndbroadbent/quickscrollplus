@@ -1,14 +1,14 @@
 Package: hk.ndb.quickscrollplus
 Name: QuickScrollPlus
-Version: 0.3-1a
+Version: 0.4-2b
 Architecture: iphoneos-arm
-Description: Quickly scroll through anything, now extended with 'tilt' scrolling for every app on your iPhone. PDF paging. Initiate with two-finger or triple tap.
+Description: Quickly scroll through any app on your iPhone. Activate 'tilt' scrolling on anything and everything. PDF paging. Initiate with two-finger or triple tap, or automatically.
 Homepage: http://github.com/ndbroadbent/quickscrollplus
 Maintainer: NathanB <www.f-77.com>
 Author: KennyTM~ <kennytm+QuickScroll@gmail.com>
 Section: System
 Depends: mobilesubstrate (>=0.9-0), preferenceloader (>=1.1)
-Pre-Depends: firmware (>=3.0)
+Pre-Depends: firmware (>=3.2)
 Installed-Size: 160
 Support: http://github.com/ndbroadbent/quickscrollplus
 dev: ndbroadbent
