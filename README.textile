@@ -2,13 +2,11 @@ h1. QuickScrollPlus
 
 h3. - an extension of QuickScroll2 by KennyTM~, developed by Nathan Broadbent (www.f-77.com)
 
-h3. NOTE: This is under active development, but the tilt feature is yet to be implemented. See the change log in this README for details of what has been done so far.
-
-This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling. It is only tested and working iOS 4.1. However, it is compiled with the 3.2 SDK, so it should work on most iPhones. If someone is able to confirm this, please let me know by raising an issue on the github page.
+This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling using the iPhone accelerometer. It has been tested and working on iOS 4.1. However, it is compiled with the 3.2 SDK, so it should work on most >= 3.2 iPhones. If someone is able to confirm this, please let me know.
+Note: This application will only ever work on a jailbroken iPhone, and you must uninstall QuickScroll2 before you install this application.
 
 See here for the original QuickScroll2 project wiki: http://code.google.com/p/networkpx/wiki/Using_QuickScroll
 
-Please be aware: This application will only ever work on a jailbroken iPhone.
 
 h2. Changes / Bug fixes
 
@@ -16,23 +14,24 @@ h2. Changes / Bug fixes
 * Fixed 'disabled apps' controller bug, where the state of the toggles was only saved on suspension, not deallocation.
 * Springboard app can now be disabled (was previously not showing because it had no icon and no localized title could be found).
 * Increased minimum size of scrollbar buttons (double the height / width of the circle.)
+* Added 'tilt' scrolling. (double tap the scrollbar to activate.)
 
 h2. TODO
 
-* Add 'tilt' scrolling support. (double tap the scrollbar to activate.)
+* Horizontal (x-axis) tilt scrolling. Not sure how important this is, though.
 * Fix up 'disabled apps' page:
-** Work out how to get icons showing for some cases
+** Work out how to get icons showing for half of the apps.
 ** Work out how to use the PS groups without crashing the controller.
 
 h2. Application Usage
 
 To use the tilt scrolling feature: 
 
-# Position your iPhone at a comfortable reading angle, and then tilt it a few degrees away from you. This will be the zero calibration point.
-# Activate the scrollbars with your prefered method.
-# Double tap either the horizontal or vertical scroll bars. They will turn green to indicate that tilt scrolling is now enabled.
-# Tilt your iPhone back towards you, and the page will start to scroll. You can control or reverse the speed by adjusting the tilt angle.
-# To turn off the tilt scroll feature, double tap the scroll bars again.
+# Position your iPhone at a 45 degree angle.
+# Activate the grey scrollbars with your prefered method (double tap, triple tap, automatic, etc).
+# Quickly double tap the vertical scroll bars. They will turn blue to indicate that tilt scrolling is now enabled.
+# Tilt your iPhone towards you, and the page will start to scroll. You can control or reverse the speed by adjusting the tilt angle between horizontal and vertical.
+# To turn off the tilt scroll feature, tap the scroll bar once.
 
 
 h2. Compiling and installing from source
