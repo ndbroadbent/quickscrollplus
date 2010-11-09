@@ -1,0 +1,26 @@
+- Accelerometer Readings
+
+Proof of concept using just Y-Axis.
+
+Scale:
+   0.0 : horizontal
+  -0.5 : 45 degrees
+  -1.0 : vertical
+
+Accelerometer Reference Points (ABS):
+
+  scroll one page backwards per second : < 0.1
+  fast scroll backwards : 0.1 <=> 0.2
+  medium scroll backwards : 0.2 <=> 0.3
+  slow scroll backwards : 0.3 <=> 0.45
+  resting (still) : 0.45 <=> 0.55
+  slow scroll : 0.55 <=> 0.7
+  medium scroll : 0.7 <=> 0.8
+  fast scroll : 0.8 <=> 0.9
+  scroll one page per second : > 0.9
+
+Scrolling Speeds:
+
+  slow:    5 px/s
+  medium: 15 px/s
+  fast:   35 px/s
