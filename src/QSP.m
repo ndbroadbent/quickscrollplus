@@ -963,6 +963,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 		if (tapTimer) {
 			[tapTimer invalidate];
 			[tapTimer release];
+			tapTimer = nil;
 		}
 	}
 }
@@ -987,23 +988,28 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 		if (tapTimer) {
 			[tapTimer invalidate];
 			[tapTimer release];
+			tapTimer = nil;
 		}
 		
 		if (isTiltActivated) {
 			isTiltActivated = NO;
+			[abstractScroller enableFading];
 			
 			// ------- Turn off tilt scrolling here -------
 			
 		} else {
 			tapCount += 1;
 			if (tapCount == 2) {
+				tapCount = 0;
 				// Scrollbar was double-tapped.
 				isTiltActivated = YES;
+				[abstractScroller disableFading];
+				
 				
 				// ------- Turn on tilt scrolling here -------
 				
 			} else {
-				tapTimer = [[NSTimer scheduledTimerWithTimeInterval:800 target:self selector:@selector(fireTapReset) userInfo:nil repeats:YES] retain];
+				tapTimer = [[NSTimer scheduledTimerWithTimeInterval:0.7 target:self selector:@selector(fireTapReset) userInfo:nil repeats:YES] retain];
 			}
 		}
 	}
