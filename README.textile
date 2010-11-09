@@ -23,6 +23,18 @@ h2. TODO
 ** Work out how to get icons showing for half of the apps.
 ** Work out how to use the PS groups without crashing the controller.
 
+ 
+h2. Installation
+
+Please not that compiling from source is not necessary. The instructions below are just included for anyone interested.
+
+* Download the .deb package from the 'Downloads' section on this page.
+* SSH the package to your iPhone.
+* SSH into your iPhone.
+* Make sure you have uninstalled QuickScroll2.
+* $ dpkg -i hk.ndb.quickscrollplus*********.deb
+
+
 h2. Application Usage
 
 To use the tilt scrolling feature: 
