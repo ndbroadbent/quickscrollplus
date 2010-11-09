@@ -808,7 +808,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 
 #pragma mark -
 
-@interface QSScrollbar : UIView {
+@interface QSScrollbar : UIView <UIAccelerometerDelegate> {
 	CGSize scale;
 	QSAbstractScroller* abstractScroller;
 	CGRect relativeFrame, visualRelFrame, savedVisualRelFrame;
@@ -822,8 +822,12 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	NSTimer* tapTimer;
 	int tapCount;
 	BOOL isTiltActivated;
+	NSTimer* tiltScrollTimer;
+	float tiltScrollSpeed; // n-scale steps per second
+	UIAccelerometer* accelerometer;
 }
 @property(assign,nonatomic) CGSize scale;
+-(float)accelToTiltSpeed: (float)accel minRange:(float)minRange maxRange:(float)maxRange minOutput:(float)minOutput maxOutput:(float)maxOutput invert:(BOOL)invert;
 @end
 @implementation QSScrollbar
 @synthesize scale;
@@ -845,7 +849,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	visualRelFrame.origin.y += shift.height;
 	
 	CGPoint oldOrigin = relativeFrame.origin;
-	relativeFrame.origin = visualToActualPoint(visualRelFrame.origin, relativeFrame.size, self.bounds.size, handleSize);
+	relativeFrame.origin = visualToActualPoint(visualRelFrame.origin, relativeFrame.size, self.bounds.size, minHandleDisplaySize);
 	if (isVertical)
 		relativeFrame.origin.x = oldOrigin.x;
 	else
@@ -864,6 +868,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 		tilt_button = tltBtn;
 		tilt_button_down = tltBtnDown;
 		tapCount = 0;
+		tiltScrollSpeed = 0.0;
 		isTiltActivated = NO;
 		self.autoresizingMask = vert ? (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleHeight) : (UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth);
 		self.contentMode = UIViewContentModeRedraw;
@@ -992,24 +997,31 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 		}
 		
 		if (isTiltActivated) {
+			// ------- Turn off tilt scrolling -------
 			isTiltActivated = NO;
-			[abstractScroller enableFading];
-			
-			// ------- Turn off tilt scrolling here -------
+			[abstractScroller enableFading];  // Let our scrollbars fade away
+			[tiltScrollTimer invalidate];
+			[tiltScrollTimer release];
+			tiltScrollTimer = nil;
+			accelerometer = nil;
 			
 		} else {
 			tapCount += 1;
 			if (tapCount == 2) {
-				tapCount = 0;
 				// Scrollbar was double-tapped.
+				// ------- Turn on tilt scrolling -------
+				tapCount = 0;
 				isTiltActivated = YES;
-				[abstractScroller disableFading];
-				
-				
-				// ------- Turn on tilt scrolling here -------
-				
+				[abstractScroller disableFading];  // Make sure our scrollbars don't fade away.
+				// Initialize accelerometer
+				accelerometer = [UIAccelerometer sharedAccelerometer];
+				accelerometer.updateInterval = .1;
+				accelerometer.delegate = self;
+				// Initialize timer for scrolling speed
+				tiltScrollTimer = [[NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(fireTiltScrollStep) userInfo:nil repeats:YES] retain];
 			} else {
-				tapTimer = [[NSTimer scheduledTimerWithTimeInterval:0.7 target:self selector:@selector(fireTapReset) userInfo:nil repeats:YES] retain];
+				// If this is only the first tap, start a timer that will reset the tap counter after a delay.
+				tapTimer = [[NSTimer scheduledTimerWithTimeInterval:0.7 target:self selector:@selector(fireTapReset) userInfo:nil repeats:NO] retain];
 			}
 		}
 	}
@@ -1017,19 +1029,58 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	[self setNeedsDisplay];
 }
 
+-(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+	[self touchesEnded:touches withEvent:event];
+}
 
 -(void)fireTapReset {
 	tapCount = 0;
 }
 
--(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-	[self touchesEnded:touches withEvent:event];
+// Shared accelerometer calls this function at a specified interval, to update its readings. 
+- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration {
+	// Set the tilt scrolling speed based on the accelerometer reading.
+	float ac = ABS(acceleration.y);
+	if (ac > 0.65) {
+		// 0.4 up to 8.0, between 0.65 and 1.0
+		tiltScrollSpeed = [self accelToTiltSpeed: ac minRange:0.65 maxRange:1.0 minOutput:0.4 maxOutput:8.0 invert:NO];
+	} else if (ac > 0.55) {
+		// 0.1 up to 0.4, between 0.55 and 0.65
+		tiltScrollSpeed = [self accelToTiltSpeed: ac minRange:0.55 maxRange:0.65 minOutput:0.1 maxOutput:0.4 invert:NO];
+	} else if (ac > 0.45) {
+		// Not moving
+		tiltScrollSpeed = 0;
+	} else {
+		// -0.1 up to -8.0, between 0.0 and 0.45 (this is 'inverted' since it speeds up as it gets smaller.)
+		tiltScrollSpeed = -1.0 * [self accelToTiltSpeed: ac minRange:0.0 maxRange:0.45 minOutput:0.1 maxOutput:8.0 invert:YES];
+	}
 }
+
+-(float)accelToTiltSpeed: (float)accel minRange:(float)minRange maxRange:(float)maxRange minOutput:(float)minOutput maxOutput:(float)maxOutput invert:(BOOL)invert {
+	return ((invert?(maxRange - accel):(accel - minRange))/(maxRange - minRange) * (maxOutput - minOutput)) + minOutput;
+}
+
+// Each time the tiltScrollTimer is fired, step 1 pixel in a direction based on the scroll speed's sign.
+-(void)fireTiltScrollStep {
+	savedVisualRelFrame = visualRelFrame;
+	CGSize delta = CGSizeZero;
+	if (isVertical) {
+		// This calculation means that we can move the scrollbar at a given fixed rate, but relative to the frame size.
+		delta.height = (relativeFrame.size.height / visualRelFrame.size.height) * tiltScrollSpeed;
+	} else {
+		delta.width = (relativeFrame.size.width / visualRelFrame.size.width) * tiltScrollSpeed;
+	}
+	[self shiftRelativeFrameVisuallyBy:delta];
+	savedVisualRelFrame = visualRelFrame;
+}
+
 -(void)dealloc {
 	[autoShiftTimer invalidate];
 	[autoShiftTimer release];
 	[tapTimer invalidate];
 	[tapTimer release];
+	[tiltScrollTimer invalidate];
+	[tiltScrollTimer release];
 	[super dealloc];
 }
 @end

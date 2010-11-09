@@ -14,13 +14,16 @@ Accelerometer Reference Points (ABS):
   medium scroll backwards : 0.2 <=> 0.3
   slow scroll backwards : 0.3 <=> 0.45
   resting (still) : 0.45 <=> 0.55
-  slow scroll : 0.55 <=> 0.7
-  medium scroll : 0.7 <=> 0.8
+  slow scroll : 0.55 <=> 0.65
+  medium scroll : 0.65 <=> 0.8
   fast scroll : 0.8 <=> 0.9
-  scroll one page per second : > 0.9
+  very fast scroll : > 0.9
 
-Scrolling Speeds:
+Scrolling Speeds (n-scale per step):
 
-  slow:    5 px/s
-  medium: 15 px/s
-  fast:   35 px/s
+  slow (reading):    0.1
+  medium:  0.3
+  medium scan: 0.5
+  medium-fast scan: 1.0
+  fast: 3.0
+  super-fast:   5.0
