@@ -3,7 +3,8 @@ h1. QuickScrollPlus
 h3. - an extension of QuickScroll2 by KennyTM~, developed by Nathan Broadbent (www.f-77.com)
 
 This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling using the iPhone accelerometer. It has been tested and working on iOS 4.1. However, it is compiled with the 3.2 SDK, so it should work on most >= 3.2 iPhones. If someone is able to confirm this, please let me know.
-Note: This application will only ever work on a jailbroken iPhone, and you must uninstall QuickScroll2 before you install this application.
+Note: This application will only ever work on a jailbroken iPhone.
+It will also automatically uninstall QuickScroll2 if it is installed, so you will need to reconfigure your settings.
 
 See here for the original QuickScroll2 project wiki: http://code.google.com/p/networkpx/wiki/Using_QuickScroll
 
@@ -22,6 +23,7 @@ h2. TODO
 * Horizontal (x-axis) tilt scrolling in portrait mode.
 * Landscape orientation scrolling.
 * More configuration options for tilt scrolling.
+* More stability, especially when suspending/resuming apps. Recheck for memory leaks and inefficiencies.
 * Fix 'disabled apps' settings page:
 ** Work out how to get icons showing for half of the apps.
 ** Work out how to use the PS groups without crashing the controller.
@@ -29,12 +31,12 @@ h2. TODO
  
 h2. Installation
 
-Please not that compiling from source is not necessary. The instructions below are just included for anyone interested.
+Compiling from source is not necessary. The instructions below are just included for anyone interested.
+The .deb will hopefully be hosted soon on a public repo.
 
 * Download the .deb package from the 'Downloads' section on this page.
 * SSH the package to your iPhone.
 * SSH into your iPhone.
-* Make sure you have uninstalled QuickScroll2.
 * $ dpkg -i hk.ndb.quickscrollplus*********.deb
 
 
