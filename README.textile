@@ -18,8 +18,10 @@ h2. Changes / Bug fixes
 
 h2. TODO
 
-* Horizontal (x-axis) tilt scrolling. Not sure how important this is, though.
-* Fix up 'disabled apps' page:
+* Horizontal (x-axis) tilt scrolling in portrait mode.
+* Landscape orientation scrolling.
+* More configuration options for tilt scrolling.
+* Fix 'disabled apps' settings page:
 ** Work out how to get icons showing for half of the apps.
 ** Work out how to use the PS groups without crashing the controller.
 
