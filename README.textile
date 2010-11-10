@@ -31,8 +31,7 @@ h2. TODO
  
 h2. Installation
 
-Compiling from source is not necessary. The instructions below are just included for anyone interested.
-The .deb will hopefully be hosted soon on a public repo.
+The deb package will hopefully be hosted soon on a public repo.
 
 * Download the .deb package from the 'Downloads' section on this page.
 * SSH the package to your iPhone.
@@ -52,6 +51,8 @@ To use the tilt scrolling feature:
 
 
 h2. Compiling and installing from source
+
+Note: Compiling from source is not necessary. The instructions below are just for anyone who is interested in contributing.
 
 In order to compile and install this application, you must have the following files on your Mac:
 
