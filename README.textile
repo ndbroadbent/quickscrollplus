@@ -14,7 +14,8 @@ h2. Changes / Bug fixes
 * Fixed 'disabled apps' controller bug, where the state of the toggles was only saved on suspension, not deallocation.
 * Springboard app can now be disabled (was previously not showing because it had no icon and no localized title could be found).
 * Increased minimum size of scrollbar buttons (double the height / width of the circle.)
-* Added 'tilt' scrolling. (double tap the scrollbar to activate.)
+* Added very basic 'tilt' scrolling. (double tap the scrollbar to activate.)
+** Currently only supports vertical scrolling in portrait mode, but will be finished soon.
 
 h2. TODO
 
