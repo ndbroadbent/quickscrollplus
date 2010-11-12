@@ -1125,10 +1125,12 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 		
 		[self _didScroll];
 		
-		// Initialize accelerometer
-		accelerometer = [UIAccelerometer sharedAccelerometer];
-		accelerometer.updateInterval = .1;
-		accelerometer.delegate = self;
+		if (activate_tilt_scrolling_by_scrollbar_double_tap) {
+			// Initialize accelerometer if tilt scrolling is enabled.
+			accelerometer = [UIAccelerometer sharedAccelerometer];
+			accelerometer.updateInterval = .1;
+			accelerometer.delegate = self;
+		}
 	}
 	return self;
 }
@@ -1186,7 +1188,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	[UIView commitAnimations];
 }
 
-// Accelerometer functions
+// Tilt Scroll methods
 // -----------------------------------------------------------------------------------------------------
 
 -(float)accelToTiltSpeed: (float)accel minRange:(float)minRange maxRange:(float)maxRange minOutput:(float)minOutput maxOutput:(float)maxOutput invert:(BOOL)invert {
