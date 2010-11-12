@@ -1037,13 +1037,22 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 -(void)fireTiltScrollStep {
 	savedVisualRelFrame = visualRelFrame;
 	CGSize delta = CGSizeZero;
+	// These calculations mean that we can move the scrollbar at a given fixed rate for the scrollbar, relative to the frame size.
 	if (isVertical) {
-		// This calculation means that we can move the scrollbar at a given fixed rate, but relative to the frame size.
 		delta.height = (relativeFrame.size.height / visualRelFrame.size.height) * tiltScrollSpeed;
+		// Don't shift the visualRelFrame more than the min or max height.
+		// Basically, only perform the shift if the frames position is lower than the top and the change is towards the top,
+		// or if the position plus frame height is higher than the bottom and the change is towards the bottom.
+		if ((visualRelFrame.origin.y > 0 && delta.height < 0) || ((visualRelFrame.origin.y + visualRelFrame.size.height) < self.bounds.size.height && delta.height > 0)) {
+			[self shiftRelativeFrameVisuallyBy:delta];
+		}
 	} else {
 		delta.width = (relativeFrame.size.width / visualRelFrame.size.width) * tiltScrollSpeed;
+		if ((visualRelFrame.origin.x > 0 && delta.width < 0) || ((visualRelFrame.origin.x + visualRelFrame.size.width) < self.bounds.size.width && delta.width > 0)) {
+			[self shiftRelativeFrameVisuallyBy:delta];
+		}
 	}
-	[self shiftRelativeFrameVisuallyBy:delta];
+
 	savedVisualRelFrame = visualRelFrame;
 }
 
@@ -1068,7 +1077,6 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 }
 -(float)accelToTiltSpeed: (float)accel minRange:(float)minRange maxRange:(float)maxRange minOutput:(float)minOutput maxOutput:(float)maxOutput invert:(BOOL)invert;
 -(void)calculateAndSetTiltScrollSpeeds:(QSScrollbar*)scrollBar acceleration:(float *)acc;
--(BOOL)isPortrait;
 @end
 @implementation QSScrollbarView
 -(void)removeScrollIndicators {
@@ -1193,11 +1201,6 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 
 -(float)accelToTiltSpeed: (float)accel minRange:(float)minRange maxRange:(float)maxRange minOutput:(float)minOutput maxOutput:(float)maxOutput invert:(BOOL)invert {
 	return ((invert?(maxRange - accel):(accel - minRange))/(maxRange - minRange) * (maxOutput - minOutput)) + minOutput;
-}
-
--(BOOL)isPortrait {
-	
-	return [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait;	
 }
 
 // Shared accelerometer calls this function at a specified interval, to update its readings. 
