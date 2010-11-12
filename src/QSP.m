@@ -90,6 +90,10 @@ void reload_prefs() {
 			activate_tilt_scrolling_by_scrollbar_double_tap = [[dict2 objectForKey:@"activate_tilt_scrolling_by_scrollbar_double_tap"] boolValue];
 		}
 	}
+	// Permanently disable tilt scrolling for springboard.
+	if ([[NSBundle mainBundle] bundleIdentifier] == @"com.apple.springboard") {
+		activate_tilt_scrolling_by_scrollbar_double_tap = NO;
+	}
 	
 	pthread_mutex_unlock(&prefs_lock);
 }
