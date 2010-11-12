@@ -78,7 +78,7 @@ void reload_prefs() {
 	} else {
 		NSArray* disabled_apps = [dict2 objectForKey:@"disabled_apps"];
 		if ([disabled_apps containsObject:[[NSBundle mainBundle] bundleIdentifier]]) {
-			activate_by_single_tap = activate_by_triple_tap = activate_by_two_finger_tap = activate_by_scrolling = NO;
+			activate_tilt_scrolling_by_scrollbar_double_tap = activate_by_single_tap = activate_by_triple_tap = activate_by_two_finger_tap = activate_by_scrolling = NO;
 		} else {
 			activate_by_single_tap = [[dict2 objectForKey:@"activate_by_single_tap"] boolValue];
 			activate_by_triple_tap = [[dict2 objectForKey:@"activate_by_triple_tap"] boolValue];
@@ -90,8 +90,8 @@ void reload_prefs() {
 			activate_tilt_scrolling_by_scrollbar_double_tap = [[dict2 objectForKey:@"activate_tilt_scrolling_by_scrollbar_double_tap"] boolValue];
 		}
 	}
-	// Permanently disable tilt scrolling for springboard.
-	if ([[NSBundle mainBundle] bundleIdentifier] == @"com.apple.springboard") {
+	// Hard-coded disabled tilt scrolling for SpringBoard.
+	 if ([[[NSBundle mainBundle] bundleIdentifier] isEqualToString: @"com.apple.springboard"]) {
 		activate_tilt_scrolling_by_scrollbar_double_tap = NO;
 	}
 	

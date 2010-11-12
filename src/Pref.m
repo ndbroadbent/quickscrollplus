@@ -61,7 +61,7 @@ static NSComparisonResult comparePSSpecs(PSSpecifier* p1, PSSpecifier* p2, void*
 	
 	NSString* localizedName = SBSCopyLocalizedApplicationNameForDisplayIdentifier(identifier);
 	
-	if (identifier == @"com.apple.springboard")
+	if ([identifier isEqualToString: @"com.apple.springboard"])
 		localizedName = @"SpringBoard";
 	
 	if (localizedName == nil && image == nil)
