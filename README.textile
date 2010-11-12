@@ -2,12 +2,11 @@ h1. QuickScrollPlus
 
 h3. - an extension of QuickScroll2 by KennyTM~, developed by Nathan Broadbent (www.f-77.com)
 
-h2. Currently in BETA, please don't use tilt scrolling on SpringBoard and be 
+h2. Currently in BETA. It is tested and relatively stable, but please let me know if it crashes. 
 
+This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling using the iPhone accelerometer. It is tested and working on iOS 4.1. However, it is compiled with the 3.2 SDK, so it should work on >= 3.2 iPhones. If someone is able to confirm this, please let me know.
 
-This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling using the iPhone accelerometer. It has been tested and working on iOS 4.1. However, it is compiled with the 3.2 SDK, so it should work on most >= 3.2 iPhones. If someone is able to confirm this, please let me know.
 Please Note: This application will only ever work on a jailbroken iPhone.
-It will automatically uninstall QuickScroll2 if it is installed, so you will probably need to reconfigure your settings.
 
 See here for the original QuickScroll2 project wiki: http://code.google.com/p/networkpx/wiki/Using_QuickScroll
 
@@ -22,7 +21,7 @@ h2. Is known to work with..
 * iOctocat
 * MobileRSS
 
-Should work well with any app that uses a standard table or view.
+.. and it should just work with any app that uses standard tables or views (most apps do).
 
 
 h2. Is known to NOT work with..
@@ -30,7 +29,7 @@ h2. Is known to NOT work with..
 * Dropbox
 ** PDF viewer already has a kind of 'QuickScroll' thing going on, but tilt scrolling can be activated on this. 
 * Evernote
-** Uses a very custom UIView for their note table, causes weird behavior when using QuickScrollPlus.
+** Uses a very custom UIView for their notes table, causes weird behavior when using QuickScrollPlus.
 * Contacts App
 ** Apple already has their own 'A-Z' scrolling system.
 
@@ -58,10 +57,12 @@ h2. TODO
  
 h2. Installation
 
-The deb package will hopefully be hosted soon on a public repo. Until then:
+QuickScrollPlus will automatically uninstall QuickScroll2 if present, so you will need to reconfigure your settings.
+
+The deb package will hopefully be hosted on a public repo soon. Until then:
 
 * Download the .deb package from the 'Downloads' section on this page.
-* SSH the package to your iPhone.
+* SCP the package to your iPhone.
 * SSH into your iPhone, and run:
 ** $ dpkg -i hk.ndb.quickscrollplus*********.deb
 (where ******** is the current version)
