@@ -1067,6 +1067,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	UIAccelerometer* accelerometer;
 }
 -(float)accelToTiltSpeed: (float)accel minRange:(float)minRange maxRange:(float)maxRange minOutput:(float)minOutput maxOutput:(float)maxOutput invert:(BOOL)invert;
+-(void)calculateAndSetTiltScrollSpeeds:(QSScrollbar*)scrollBar acceleration:(float *)acc;
 -(BOOL)isPortrait;
 @end
 @implementation QSScrollbarView
@@ -1193,32 +1194,51 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 }
 
 -(BOOL)isPortrait {
-	// Finds the orientation of the device by asking the statusBar
+	
 	return [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait;	
 }
 
 // Shared accelerometer calls this function at a specified interval, to update its readings. 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration {
+	// Some orientations will need to invert the accelerometer value ( 1.0 - ABS(x) ) 
 	// Set the tilt scrolling speed based on the accelerometer reading (and orientation).
 	float accY;
-	if([self isPortrait]) {
-		accY = ABS(acceleration.y);
-	} else {
-		accY = ABS(acceleration.x);
-	}
+	float accX;
+	// Finds the orientation of the device by asking the statusBar.
+	UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	
-	if (accY > 0.65) {
+	if(orientation == UIInterfaceOrientationPortrait) {
+		accY = ABS(acceleration.y);
+		accX = 1.0 - ABS(acceleration.x - 0.5); // Sets the relative 'still' point at horizontal, instead of 45 degrees. (and inverts)
+	} else {
+		// When in landscape orientation, we need to reverse the X and Y axis.
+		accY = ABS(acceleration.x);
+		accX = ABS(acceleration.y - 0.5);
+	} 
+	
+	// If landscape_left, invert the X axis acceleration
+	if (orientation == UIInterfaceOrientationLandscapeLeft)
+		accX = 1.0 - accX;
+	
+	[self calculateAndSetTiltScrollSpeeds: vertBar acceleration:&accY];
+	[self calculateAndSetTiltScrollSpeeds: horBar  acceleration:&accX];
+
+}
+
+// Method can be used to set the scroll speeds for both vertical and horizontal scroll bars, since logic is identical.
+-(void)calculateAndSetTiltScrollSpeeds:(QSScrollbar*)scrollBar acceleration:(float *)acc {
+	if (*acc > 0.65) {
 		// 0.4 up to 8.0, between 0.65 and 1.0
-		vertBar.tiltScrollSpeed = [self accelToTiltSpeed: accY minRange:0.65 maxRange:1.0 minOutput:0.4 maxOutput:8.0 invert:NO];
-	} else if (accY > 0.55) {
+		scrollBar.tiltScrollSpeed = [self accelToTiltSpeed: *acc minRange:0.65 maxRange:1.0 minOutput:0.4 maxOutput:8.0 invert:NO];
+	} else if (*acc > 0.55) {
 		// 0.1 up to 0.4, between 0.55 and 0.65
-		vertBar.tiltScrollSpeed = [self accelToTiltSpeed: accY minRange:0.55 maxRange:0.65 minOutput:0.1 maxOutput:0.4 invert:NO];
-	} else if (accY > 0.45) {
+		scrollBar.tiltScrollSpeed = [self accelToTiltSpeed: *acc minRange:0.55 maxRange:0.65 minOutput:0.1 maxOutput:0.4 invert:NO];
+	} else if (*acc > 0.45) {
 		// Not moving
-		vertBar.tiltScrollSpeed = 0;
+		scrollBar.tiltScrollSpeed = 0;
 	} else {
 		// -0.1 up to -8.0, between 0.0 and 0.45 (this is 'inverted' since it speeds up as it gets smaller.)
-		vertBar.tiltScrollSpeed = -1.0 * [self accelToTiltSpeed: accY minRange:0.0 maxRange:0.45 minOutput:0.1 maxOutput:8.0 invert:YES];
+		scrollBar.tiltScrollSpeed = -1.0 * [self accelToTiltSpeed: *acc minRange:0.0 maxRange:0.45 minOutput:0.1 maxOutput:8.0 invert:YES];
 	}
 }
 
