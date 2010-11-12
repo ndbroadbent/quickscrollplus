@@ -9,6 +9,9 @@ Author: KennyTM~ <kennytm+QuickScroll@gmail.com>
 Section: System
 Depends: mobilesubstrate (>=0.9-0), preferenceloader (>=1.1)
 Pre-Depends: firmware (>=3.2)
+Provides: hk.kennytm.quickscroll
+Replaces: hk.kennytm.quickscroll
+Conflicts: hk.kennytm.quickscroll
 Installed-Size: 160
 Support: http://github.com/ndbroadbent/quickscrollplus
 dev: ndbroadbent
