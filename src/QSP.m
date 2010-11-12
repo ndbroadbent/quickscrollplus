@@ -1003,7 +1003,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 			[tiltScrollTimer invalidate];
 			[tiltScrollTimer release];
 			tiltScrollTimer = nil;
-			accelerometer = nil;
+			accelerometer.delegate = nil;
 			
 		} else {
 			tapCount += 1;
@@ -1017,6 +1017,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 				accelerometer = [UIAccelerometer sharedAccelerometer];
 				accelerometer.updateInterval = .1;
 				accelerometer.delegate = self;
+
 				// Initialize timer for scrolling speed
 				tiltScrollTimer = [[NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(fireTiltScrollStep) userInfo:nil repeats:YES] retain];
 			} else {
@@ -1081,6 +1082,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	[tapTimer release];
 	[tiltScrollTimer invalidate];
 	[tiltScrollTimer release];
+	accelerometer.delegate = nil;
 	[super dealloc];
 }
 @end
