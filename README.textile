@@ -27,9 +27,9 @@ h2. Is known to work with..
 h2. Is known to NOT work with..
 
 * Dropbox
-** PDF viewer already has a kind of 'QuickScroll' thing going on, but tilt scrolling can be activated on this. 
+** PDF viewer already has a kind of 'QuickScroll' thing going on, and forces out QuickScrollPlus.
 * Evernote
-** Uses a very custom UIView for their notes table, causes weird behavior when using QuickScrollPlus.
+** Uses a very custom UIView for the notes table, causes weird behavior when using QuickScrollPlus.
 * Contacts App
 ** Apple already has their own 'A-Z' scrolling system.
 
