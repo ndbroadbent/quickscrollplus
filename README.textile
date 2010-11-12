@@ -4,6 +4,7 @@ h3. - an extension of QuickScroll2 by KennyTM~, developed by Nathan Broadbent (w
 
 h2. Currently in BETA, please don't use tilt scrolling on SpringBoard and be 
 
+
 This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling using the iPhone accelerometer. It has been tested and working on iOS 4.1. However, it is compiled with the 3.2 SDK, so it should work on most >= 3.2 iPhones. If someone is able to confirm this, please let me know.
 Please Note: This application will only ever work on a jailbroken iPhone.
 It will automatically uninstall QuickScroll2 if it is installed, so you will probably need to reconfigure your settings.
@@ -24,7 +25,7 @@ h2. Is known to work with..
 Should work well with any app that uses a standard table or view.
 
 
-h2. Is known NOT to work with..
+h2. Is known to NOT work with..
 
 * Dropbox
 ** PDF viewer already has a kind of 'QuickScroll' thing going on, but tilt scrolling can be activated on this. 
@@ -32,6 +33,8 @@ h2. Is known NOT to work with..
 ** Uses a very custom UIView for their note table, causes weird behavior when using QuickScrollPlus.
 * Contacts App
 ** Apple already has their own 'A-Z' scrolling system.
+
+Also note that tilt scrolling is hard-coded as disabled on SpringBoard.
 
 
 h2. Changes / Bug fixes
