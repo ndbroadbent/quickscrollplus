@@ -808,7 +808,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 
 #pragma mark -
 
-@interface QSScrollbar : UIView <UIAccelerometerDelegate> {
+@interface QSScrollbar : UIView {
 	CGSize scale;
 	QSAbstractScroller* abstractScroller;
 	CGRect relativeFrame, visualRelFrame, savedVisualRelFrame;
@@ -824,13 +824,13 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	BOOL isTiltActivated;
 	NSTimer* tiltScrollTimer;
 	float tiltScrollSpeed; // n-scale steps per second
-	UIAccelerometer* accelerometer;
 }
 @property(assign,nonatomic) CGSize scale;
--(float)accelToTiltSpeed: (float)accel minRange:(float)minRange maxRange:(float)maxRange minOutput:(float)minOutput maxOutput:(float)maxOutput invert:(BOOL)invert;
+@property(assign,nonatomic) float tiltScrollSpeed;
 @end
 @implementation QSScrollbar
 @synthesize scale;
+@synthesize tiltScrollSpeed;
 -(void)setRelativeFrame:(CGRect)rf {
 	relativeFrame = rf;
 	visualRelFrame = actualToVisual(rf, self.bounds.size, minHandleDisplaySize);
@@ -1003,7 +1003,6 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 			[tiltScrollTimer invalidate];
 			[tiltScrollTimer release];
 			tiltScrollTimer = nil;
-			accelerometer.delegate = nil;
 			
 		} else {
 			tapCount += 1;
@@ -1013,10 +1012,6 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 				tapCount = 0;
 				isTiltActivated = YES;
 				[abstractScroller disableFading];  // Make sure our scrollbars don't fade away.
-				// Initialize accelerometer
-				accelerometer = [UIAccelerometer sharedAccelerometer];
-				accelerometer.updateInterval = .1;
-				accelerometer.delegate = self;
 
 				// Initialize timer for scrolling speed
 				tiltScrollTimer = [[NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(fireTiltScrollStep) userInfo:nil repeats:YES] retain];
@@ -1036,29 +1031,6 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 
 -(void)fireTapReset {
 	tapCount = 0;
-}
-
-// Shared accelerometer calls this function at a specified interval, to update its readings. 
-- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration {
-	// Set the tilt scrolling speed based on the accelerometer reading.
-	float ac = ABS(acceleration.y);
-	if (ac > 0.65) {
-		// 0.4 up to 8.0, between 0.65 and 1.0
-		tiltScrollSpeed = [self accelToTiltSpeed: ac minRange:0.65 maxRange:1.0 minOutput:0.4 maxOutput:8.0 invert:NO];
-	} else if (ac > 0.55) {
-		// 0.1 up to 0.4, between 0.55 and 0.65
-		tiltScrollSpeed = [self accelToTiltSpeed: ac minRange:0.55 maxRange:0.65 minOutput:0.1 maxOutput:0.4 invert:NO];
-	} else if (ac > 0.45) {
-		// Not moving
-		tiltScrollSpeed = 0;
-	} else {
-		// -0.1 up to -8.0, between 0.0 and 0.45 (this is 'inverted' since it speeds up as it gets smaller.)
-		tiltScrollSpeed = -1.0 * [self accelToTiltSpeed: ac minRange:0.0 maxRange:0.45 minOutput:0.1 maxOutput:8.0 invert:YES];
-	}
-}
-
--(float)accelToTiltSpeed: (float)accel minRange:(float)minRange maxRange:(float)maxRange minOutput:(float)minOutput maxOutput:(float)maxOutput invert:(BOOL)invert {
-	return ((invert?(maxRange - accel):(accel - minRange))/(maxRange - minRange) * (maxOutput - minOutput)) + minOutput;
 }
 
 // Each time the tiltScrollTimer is fired, step 1 pixel in a direction based on the scroll speed's sign.
@@ -1082,18 +1054,20 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	[tapTimer release];
 	[tiltScrollTimer invalidate];
 	[tiltScrollTimer release];
-	accelerometer.delegate = nil;
 	[super dealloc];
 }
 @end
 
 
-@interface QSScrollbarView : QSAbstractScroller {
+@interface QSScrollbarView : QSAbstractScroller <UIAccelerometerDelegate> {
 	QSScrollbar* vertBar, *horBar;
 	QSPagerView* _pager;
 	BOOL _inPagerView;
 	BOOL _sih, _siv;
+	UIAccelerometer* accelerometer;
 }
+-(float)accelToTiltSpeed: (float)accel minRange:(float)minRange maxRange:(float)maxRange minOutput:(float)minOutput maxOutput:(float)maxOutput invert:(BOOL)invert;
+-(BOOL)isPortrait;
 @end
 @implementation QSScrollbarView
 -(void)removeScrollIndicators {
@@ -1149,6 +1123,11 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 		[_pager release];		
 		
 		[self _didScroll];
+		
+		// Initialize accelerometer
+		accelerometer = [UIAccelerometer sharedAccelerometer];
+		accelerometer.updateInterval = .1;
+		accelerometer.delegate = self;
 	}
 	return self;
 }
@@ -1182,6 +1161,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 }
 -(void)dealloc {
 	[self restoreScrollIndicators];
+	accelerometer.delegate = nil;
 	[super dealloc];
 }
 -(void)togglePager {
@@ -1204,6 +1184,44 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	[self _didScroll];
 	[UIView commitAnimations];
 }
+
+// Accelerometer functions
+// -----------------------------------------------------------------------------------------------------
+
+-(float)accelToTiltSpeed: (float)accel minRange:(float)minRange maxRange:(float)maxRange minOutput:(float)minOutput maxOutput:(float)maxOutput invert:(BOOL)invert {
+	return ((invert?(maxRange - accel):(accel - minRange))/(maxRange - minRange) * (maxOutput - minOutput)) + minOutput;
+}
+
+-(BOOL)isPortrait {
+	// Finds the orientation of the device by asking the statusBar
+	return [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait;	
+}
+
+// Shared accelerometer calls this function at a specified interval, to update its readings. 
+- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration {
+	// Set the tilt scrolling speed based on the accelerometer reading (and orientation).
+	float accY;
+	if([self isPortrait]) {
+		accY = ABS(acceleration.y);
+	} else {
+		accY = ABS(acceleration.x);
+	}
+	
+	if (accY > 0.65) {
+		// 0.4 up to 8.0, between 0.65 and 1.0
+		vertBar.tiltScrollSpeed = [self accelToTiltSpeed: accY minRange:0.65 maxRange:1.0 minOutput:0.4 maxOutput:8.0 invert:NO];
+	} else if (accY > 0.55) {
+		// 0.1 up to 0.4, between 0.55 and 0.65
+		vertBar.tiltScrollSpeed = [self accelToTiltSpeed: accY minRange:0.55 maxRange:0.65 minOutput:0.1 maxOutput:0.4 invert:NO];
+	} else if (accY > 0.45) {
+		// Not moving
+		vertBar.tiltScrollSpeed = 0;
+	} else {
+		// -0.1 up to -8.0, between 0.0 and 0.45 (this is 'inverted' since it speeds up as it gets smaller.)
+		vertBar.tiltScrollSpeed = -1.0 * [self accelToTiltSpeed: accY minRange:0.0 maxRange:0.45 minOutput:0.1 maxOutput:8.0 invert:YES];
+	}
+}
+
 @end
 
 #pragma mark -
