@@ -1095,6 +1095,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	}
 }
 -(void)restoreScrollIndicators {
+	accelerometer.delegate = nil;
 	if ([_scrollView isKindOfClass:[UIScrollView class]]) {
 		_scrollView.showsHorizontalScrollIndicator = _sih;
 		_scrollView.showsVerticalScrollIndicator = _siv;
@@ -1136,13 +1137,7 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 		[_pager release];		
 		
 		[self _didScroll];
-		
-		if (activate_tilt_scrolling_by_scrollbar_double_tap) {
-			// Initialize accelerometer if tilt scrolling is enabled.
-			accelerometer = [UIAccelerometer sharedAccelerometer];
-			accelerometer.updateInterval = .1;
-			accelerometer.delegate = self;
-		}
+
 	}
 	return self;
 }
@@ -1173,10 +1168,19 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	
 	if (_inPagerView && [_pager canUpdatePage])
 		_pager.currentPage = [self currentPage];
+	
+	if (activate_tilt_scrolling_by_scrollbar_double_tap) {
+		if (!accelerometer) {
+			// Initialize accelerometer if tilt scrolling is enabled.
+			accelerometer = [UIAccelerometer sharedAccelerometer];
+			accelerometer.updateInterval = .1;
+		}
+		if (!accelerometer.delegate)
+			accelerometer.delegate = self;
+	}
 }
 -(void)dealloc {
 	[self restoreScrollIndicators];
-	accelerometer.delegate = nil;
 	[super dealloc];
 }
 -(void)togglePager {
@@ -1190,7 +1194,6 @@ static CGPoint visualToActualPoint(CGPoint visPt, CGSize actSize, CGSize maxSize
 	} else {
 		[self removeScrollIndicators];
 	}
-
 	
 	[UIView beginAnimations:@"y"];
 	[UIView setAnimationTransition:(_inPagerView?UIViewAnimationTransitionFlipFromLeft:UIViewAnimationTransitionFlipFromRight) forView:_pager cache:YES];
