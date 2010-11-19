@@ -2,7 +2,7 @@ h1. QuickScrollPlus
 
 h3. - an extension of QuickScroll2 by KennyTM~, developed by Nathan Broadbent (www.f-77.com)
 
-h2. Currently in BETA. It is tested and relatively stable, but please let me know if it crashes. 
+h2. Currently in BETA. It is not stable, and there is a good chance that it will freeze your iPhone. 
 
 This is a fork of QuickScroll2, including bug fixes and 'tilt' scrolling using the iPhone accelerometer. It is tested and working on iOS 4.1. However, it is compiled with the 3.2 SDK, so it should work on >= 3.2 iPhones. If someone is able to confirm this, please let me know.
 
