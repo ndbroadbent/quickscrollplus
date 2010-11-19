@@ -45,11 +45,12 @@ h2. Changes / Bug fixes
 * 'Tilt' scrolling. (double tap the scrollbar to activate.)
 * Horizontal (x-axis) tilt scrolling in portrait mode.
 * Landscape orientation scrolling.
-* Fixes for stability and memory leaks.
+* Some fixes for stability and memory leaks.
 
 
 h2. TODO
 
+* Fix whatever bug is causing the iPhone to freeze periodically. I'm not sure if it is due to my modifications, or if the original code also has this problem.
 * Fix 'disabled apps' settings page:
 ** Work out how to get icons showing for about half of the apps.
 ** Work out how to use the PS groups properly in the apps table without causing a crash.
